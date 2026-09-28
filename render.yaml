@@ -7,6 +7,10 @@ services:
     startCommand: npm start
     healthCheckPath: /health
     envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
       - key: FIREBASE_SERVICE_ACCOUNT
         sync: false
       - key: ALLOWED_ORIGINS

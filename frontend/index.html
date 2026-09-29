@@ -272,4 +272,81 @@ const st=$("#stage");for(let i=0;i<8;i++){const s=document.createElement("span")
 st.onmousemove=e=>{const r=st.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;$("#heroLogo").style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg)`};
 st.onmouseleave=()=>$("#heroLogo").style.transform="";
 document.documentElement.classList.add("js");const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});$$(".rv").forEach(el=>io.observe(el));nav();count();setTimeout(()=>$("#loader").classList.add("gone"),2000);
-</script></body></html>
+</script></body>
+
+<!-- PASTE THIS AT THE VERY BOTTOM OF YOUR INDEX.HTML FILE -->
+<script type="module">
+  // 1. Initialize Firebase 
+  import { initializeApp } from "https://gstatic.com";
+  import { getAuth, signInWithEmailAndPassword } from "https://gstatic.com";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB6aZrjBF9NkpZdges6CeSJvHgalZc27bo...",
+    authDomain: "drselamdc.firebaseapp.com",
+    projectId: "drselamdc",
+    storageBucket: "drselamdc.firebasestorage.app",
+    messagingSenderId: "915381298273",
+    appId: "1:915381298273:web:3ead0aad2f6644411c7620"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // 2. Point to your live or local backend API
+  const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000' 
+    : 'https://dr-selam-dc.onrender.com'; 
+
+  // Global authenticated API utility
+  async function apiRequest(endpoint, method = 'GET', body = null) {
+    const token = sessionStorage.getItem('authToken');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const config = { method, headers };
+    if (body) config.body = JSON.stringify(body);
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || `HTTP ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 3. Hijack your forms to stop the demo mode natively
+  document.addEventListener("DOMContentLoaded", () => {
+    
+    // FIND AND INTERCEPT THE LOGIN FORM
+    const loginForm = document.querySelector("form") || document.getElementById("loginForm"); 
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Stop standard demo code from firing
+        
+        // Target whatever input fields are on your page dynamically
+        const emailInput = loginForm.querySelector('input[type="email"]') || loginForm.querySelectorAll('input')[0];
+        const passwordInput = loginForm.querySelector('input[type="password"]') || loginForm.querySelectorAll('input')[1];
+
+        if (!emailInput || !passwordInput) return alert("Could not bind login interface elements.");
+
+        try {
+          const credential = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+          const secureToken = await credential.user.getIdToken();
+          
+          sessionStorage.setItem('authToken', secureToken);
+          alert("Live connection secure! Logging in...");
+          
+          // Re-route to dashboard view if your template uses a changeView engine
+          if (typeof window.changeView === 'function') window.changeView('dashboard');
+          else window.location.reload(); 
+
+        } catch (error) {
+          alert(`Live Authentication Refused: ${error.message}`);
+        }
+      });
+    }
+  });
+</script>
+
+
+</html>

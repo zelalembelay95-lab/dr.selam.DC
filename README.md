@@ -36,7 +36,21 @@ How the pieces fit: the website talks only to the API. The API checks the Fireba
 4. SSL/TLS mode: Full (strict), proxy on.
 
 ## 5. Connecting the website to the API
-`frontend/index.html` still stores data in the browser. To go live, replace its `db` reads and writes with `fetch()` calls to the endpoints below, and its login form with Firebase `signInWithEmailAndPassword`, sending the token as `Authorization: Bearer <token>`.
+`frontend/index.html` is already wired for the live system — it calls the API and uses Firebase login, it just needs your project's details. Open the file, find the `CONFIG` block near the top of the `<script>` section, and fill in:
+
+```js
+const CONFIG = {
+  API_BASE: "https://YOUR-RENDER-API.onrender.com",   // your Render API's URL
+  FIREBASE: {
+    apiKey: "...",        // Firebase console > Project settings > your web app
+    authDomain: "....firebaseapp.com",
+    projectId: "...",
+    appId: "..."
+  }
+};
+```
+
+These four Firebase values are public identifiers (safe to ship in the page) — never put the Firebase **service account** JSON or the Supabase **service_role** key here; those stay on Render only. Until `CONFIG` is filled in, the site runs safely with clear on-page notices instead of a broken demo: booking shows "connect the backend," and login explains it isn't wired up yet.
 
 ## API
 | Method | Path | Who |

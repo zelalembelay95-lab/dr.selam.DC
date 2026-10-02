@@ -319,14 +319,15 @@ footer img{height:22px;vertical-align:-6px;margin-right:6px;opacity:.8}
    FIREBASE: from Firebase console > Project settings > your web app
    ============================================================ */
 const CONFIG = {
-  API_BASE: "https://YOUR-RENDER-API.onrender.com",
+  API_BASE: "https://dr-selam-dc.onrender.com",
   FIREBASE: {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    appId: "YOUR_FIREBASE_APP_ID"
+    apiKey: "AIzaSyB6aZrjBF9NkpZdges6CeSJvHgalZc27bo",
+    authDomain: "drselamdc.firebaseapp.com",
+    projectId: "drselamdc",
+    appId: "1:915381298273:web:3ead0aad2f6644411c7620"
   }
 };
+ 
 const NOT_CONFIGURED = CONFIG.API_BASE.includes("YOUR-RENDER-API") || CONFIG.FIREBASE.apiKey.includes("YOUR_FIREBASE");
 
 let fbApp = null, fbAuth = null;

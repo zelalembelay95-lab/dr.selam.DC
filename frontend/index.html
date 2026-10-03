@@ -47,12 +47,15 @@ nav button.l:hover,nav button.l.on{background:var(--mint)}
 .hamburger{display:none;background:var(--card);border:1.5px solid var(--line);border-radius:10px;width:42px;height:42px;cursor:pointer;flex:none;align-items:center;justify-content:center;gap:4px;flex-direction:column;margin-left:auto}
 .hamburger span{display:block;width:20px;height:2px;background:var(--ink);border-radius:2px}
 .mnav{display:none}
+.mnav-backdrop{display:none}
 @media(max-width:860px){
   nav{flex-wrap:nowrap}
   .navlinks{display:none}
   .hamburger{display:flex}
-  .mnav{display:block;position:fixed;inset:0;z-index:50;background:var(--pearl);transform:translateY(-8px);opacity:0;visibility:hidden;transition:opacity .25s,transform .25s,visibility .25s;overflow-y:auto}
-  .mnav.open{opacity:1;visibility:visible;transform:none}
+  .mnav{display:block;position:fixed;top:0;right:0;bottom:0;z-index:50;width:min(340px,84vw);background:var(--pearl);transform:translateX(100%);visibility:hidden;transition:transform .32s cubic-bezier(.3,.9,.3,1),visibility .32s;overflow-y:auto;box-shadow:-16px 0 40px #0b2a2740}
+  .mnav.open{transform:translateX(0);visibility:visible}
+  .mnav-backdrop{display:block;position:fixed;inset:0;z-index:49;background:#07211e73;backdrop-filter:blur(2px);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+  .mnav-backdrop.open{opacity:1;visibility:visible}
   .mnav-top{display:flex;align-items:center;gap:9px;padding:14px 4vw;border-bottom:1px solid var(--line)}
   .mnav-top .brand{margin-right:auto}
 .mnav-top .brand img{height:34px;filter:saturate(1.15) drop-shadow(0 2px 6px #2c8a8640)}
@@ -246,7 +249,7 @@ footer img{height:22px;vertical-align:-6px;margin-right:6px;opacity:.8}
 
  <div class="card founder rv"><div class="av">DS</div><div>
   <span class="tag">Founder &amp; Clinical Director</span>
-  <h3>Dr. Selam Kiros</h3>
+  <h3>Dr. Selam [Last name]</h3>
   <div class="role">DDS · General &amp; Cosmetic Dentistry</div>
   <p style="margin:0">Dr. Selam founded the clinic to bring calm, modern dental care to the neighborhood — every patient gets a clear explanation and a plan built around them, not a rushed visit.</p>
   <div class="social">
@@ -391,13 +394,14 @@ function nav(){const P=[["home","Home"],["about","About"],["services","Services"
  const authDesktop = me?`<button class="l" data-go="portal">My portal</button><button class="btn sm out-btn">Log out</button>`:`<button class="btn sm" data-go="login">Login</button>`;
  const authMobile = me?`<button class="l" data-go="portal">My portal</button><button class="btn out-btn">Log out</button>`:`<button class="btn" data-go="login">Login</button>`;
  $("#nav").innerHTML=`<div class="brand" data-go="home">${logoImg}Dr Selam Dental</div><div class="navlinks">${P.map(([k,l])=>`<button class="l" data-go="${k}">${l}</button>`).join("")}<a class="emg" href="${CLINIC.phoneHref}" title="Call for dental emergencies">🚨 Emergency</a><a class="wa" href="https://wa.me/2519XXXXXXXX" title="Chat on WhatsApp" target="_blank" rel="noopener">💬 WhatsApp</a>${authDesktop}</div><button class="hamburger" id="hamBtn" aria-label="Open menu"><span></span><span></span><span></span></button>`;
- $("#mnavRoot").innerHTML=`<div class="mnav" id="mnav"><div class="mnav-top"><div class="brand" data-go="home">${logoImg}Dr Selam Dental</div><button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button></div><div class="mnav-links">${P.map(([k,l])=>`<button class="ml" data-go="${k}">${l}</button>`).join("")}</div><div class="mnav-actions"><a class="emg" href="${CLINIC.phoneHref}" title="Call for dental emergencies">🚨 Emergency</a><a class="wa" href="https://wa.me/2519XXXXXXXX" title="Chat on WhatsApp" target="_blank" rel="noopener">💬 WhatsApp</a>${authMobile}</div></div>`;
- const ham=$("#hamBtn"), mn=$("#mnav"), mc=$("#mnavClose");
- if(ham) ham.onclick=()=>mn.classList.add("open");
- if(mc) mc.onclick=()=>mn.classList.remove("open");
+ $("#mnavRoot").innerHTML=`<div class="mnav-backdrop" id="mnavBackdrop"></div><div class="mnav" id="mnav"><div class="mnav-top"><div class="brand" data-go="home">${logoImg}Dr Selam Dental</div><button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button></div><div class="mnav-links">${P.map(([k,l])=>`<button class="ml" data-go="${k}">${l}</button>`).join("")}</div><div class="mnav-actions"><a class="emg" href="${CLINIC.phoneHref}" title="Call for dental emergencies">🚨 Emergency</a><a class="wa" href="https://wa.me/2519XXXXXXXX" title="Chat on WhatsApp" target="_blank" rel="noopener">💬 WhatsApp</a>${authMobile}</div></div>`;
+ const ham=$("#hamBtn"), mn=$("#mnav"), mc=$("#mnavClose"), bd=$("#mnavBackdrop");
+ if(ham) ham.onclick=()=>{mn.classList.add("open");bd.classList.add("open")};
+ if(mc) mc.onclick=()=>{mn.classList.remove("open");bd.classList.remove("open")};
+ if(bd) bd.onclick=()=>{mn.classList.remove("open");bd.classList.remove("open")};
 }
 function go(k){$$(".page").forEach(p=>p.classList.toggle("on",p.id=="p-"+k));$$("nav .l").forEach(b=>b.classList.toggle("on",b.dataset.go==k));window.scrollTo({top:0,behavior:"smooth"});if(k=="portal")portal();if(k=="home")count()}
-document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g)go(g.dataset.go);if(e.target.closest(".out-btn")){signOut()}const mn=$("#mnav");if(mn&&(g||e.target.closest(".emg")||e.target.closest(".wa")||e.target.closest(".out-btn")))mn.classList.remove("open")});
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g)go(g.dataset.go);if(e.target.closest(".out-btn")){signOut()}const mn=$("#mnav"),bd=$("#mnavBackdrop");if(mn&&(g||e.target.closest(".emg")||e.target.closest(".wa")||e.target.closest(".out-btn"))){mn.classList.remove("open");if(bd)bd.classList.remove("open")}});
 
 function count(){$$("[data-n]").forEach(el=>{const n=+el.dataset.n;let i=0;const s=()=>{i+=Math.ceil(n/40);if(i>=n)i=n;el.textContent=i.toLocaleString();if(i<n)requestAnimationFrame(s)};s()})}
 
